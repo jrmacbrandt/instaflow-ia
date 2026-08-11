@@ -39,11 +39,11 @@ export default function AccountsPage() {
   const handleRealFacebookOAuth = () => {
     setIsConnecting(true);
     const appId = '1669236564150637';
-    const redirectUri = typeof window !== 'undefined' ? `${window.location.origin}/accounts` : 'https://instaflow-ia.vercel.app/accounts';
-    const scope = 'instagram_basic,instagram_content_publish,pages_read_engagement';
+    const redirectUri = typeof window !== 'undefined' ? `${window.location.origin}/api/instagram/callback` : 'https://instaflow-ia.vercel.app/api/instagram/callback';
+    const scope = 'instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list';
     
-    // Redirect directly to official Meta Instagram Login OAuth
-    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
+    // Facebook Login Dialog for Instagram Business Graph API
+    const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`;
     window.location.href = authUrl;
   };
 
