@@ -167,7 +167,7 @@ export default function AccountsPage() {
                     <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" /> Token expira em breve!
                   </span>
                   <button
-                    onClick={handleSimulateFacebookOAuth}
+                    onClick={handleRealFacebookOAuth}
                     className="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg text-[11px] transition-all"
                   >
                     Renovar Agora
