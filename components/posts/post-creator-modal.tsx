@@ -82,22 +82,37 @@ export function PostCreatorModal({
 
   if (!isOpen) return null;
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newUrls: string[] = [];
+    Array.from(files).forEach((file) => {
+      const url = URL.createObjectURL(file);
+      newUrls.push(url);
+    });
+
+    if (mediaType === 'CAROUSEL') {
+      const combined = [...mediaUrls, ...newUrls].slice(0, 10);
+      setMediaUrls(combined);
+    } else {
+      setMediaUrls([newUrls[0]]);
+    }
+  };
+
   const handleAddSampleMedia = (type: PostMediaType) => {
     setMediaType(type);
     if (type === 'IMAGE') {
       const samples = [
         'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&auto=format&fit=crop&q=80',
       ];
-      setMediaUrls([samples[Math.floor(Math.random() * samples.length)]]);
+      setMediaUrls([samples[0]]);
     } else if (type === 'VIDEO') {
       setMediaUrls(['https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4']);
     } else if (type === 'CAROUSEL') {
       setMediaUrls([
         'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&auto=format&fit=crop&q=80',
         'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&auto=format&fit=crop&q=80',
       ]);
     }
   };
@@ -220,10 +235,10 @@ export function PostCreatorModal({
                 </div>
               </div>
 
-              {/* Main Media Preview Box */}
+              {/* Main Media Preview & Dropzone Box */}
               <div className="relative aspect-square w-full bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center group shadow-inner">
                 {mediaUrls.length > 0 ? (
-                  mediaType === 'VIDEO' ? (
+                  mediaType === 'VIDEO' || (mediaUrls[activeMediaIndex] && (mediaUrls[activeMediaIndex].endsWith('.mp4') || mediaUrls[activeMediaIndex].startsWith('blob:') && mediaUrls[activeMediaIndex].includes('video'))) ? (
                     <video
                       src={mediaUrls[activeMediaIndex] || mediaUrls[0]}
                       controls
@@ -237,10 +252,37 @@ export function PostCreatorModal({
                     />
                   )
                 ) : (
-                  <div className="text-center p-6 space-y-2 text-slate-500">
-                    <UploadCloud className="w-10 h-10 mx-auto text-slate-600" />
-                    <p className="text-xs">Nenhuma mídia selecionada</p>
-                  </div>
+                  <label className="text-center p-6 space-y-3 cursor-pointer w-full h-full flex flex-col items-center justify-center hover:bg-slate-900/50 transition-colors">
+                    <UploadCloud className="w-12 h-12 text-purple-400 animate-bounce" />
+                    <div>
+                      <p className="text-xs font-bold text-white">Clique para selecionar foto ou vídeo</p>
+                      <p className="text-[11px] text-slate-400 mt-1">PNG, JPG, MP4, MOV até 100MB</p>
+                    </div>
+                    <input
+                      type="file"
+                      accept={mediaType === 'VIDEO' ? 'video/*' : mediaType === 'CAROUSEL' ? 'image/*,video/*' : 'image/*'}
+                      multiple={mediaType === 'CAROUSEL'}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+
+                {/* Upload Action Overlay on Hover */}
+                {mediaUrls.length > 0 && (
+                  <label className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 cursor-pointer backdrop-blur-xs">
+                    <UploadCloud className="w-8 h-8 text-white" />
+                    <span className="text-xs font-bold text-white bg-purple-600 px-3 py-1.5 rounded-lg shadow-lg">
+                      {mediaType === 'CAROUSEL' ? 'Adicionar Mídia Local' : 'Trocar Arquivo Local'}
+                    </span>
+                    <input
+                      type="file"
+                      accept={mediaType === 'VIDEO' ? 'video/*' : mediaType === 'CAROUSEL' ? 'image/*,video/*' : 'image/*'}
+                      multiple={mediaType === 'CAROUSEL'}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
                 )}
 
                 {/* Carousel Indicator Badge */}
@@ -251,7 +293,7 @@ export function PostCreatorModal({
                 )}
               </div>
 
-              {/* Carousel Thumbnail Strip */}
+              {/* Carousel Thumbnail Strip & Local File Upload Button */}
               {mediaType === 'CAROUSEL' && (
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
                   {mediaUrls.map((url, idx) => (
@@ -278,18 +320,17 @@ export function PostCreatorModal({
                     </div>
                   ))}
                   {mediaUrls.length < 10 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setMediaUrls([
-                          ...mediaUrls,
-                          `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random() * 1000000)}?w=800&auto=format&fit=crop&q=80`,
-                        ])
-                      }
-                      className="w-14 h-14 rounded-lg border border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:text-slate-300 hover:border-slate-500 shrink-0 text-xs font-semibold"
-                    >
-                      + Add
-                    </button>
+                    <label className="w-14 h-14 rounded-lg border border-dashed border-purple-500/50 hover:border-purple-400 bg-purple-950/20 hover:bg-purple-900/30 flex flex-col items-center justify-center text-purple-300 shrink-0 text-xs font-semibold cursor-pointer transition-all">
+                      <UploadCloud className="w-4 h-4" />
+                      <span className="text-[10px] mt-0.5">+ Foto</span>
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
                   )}
                 </div>
               )}
