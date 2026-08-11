@@ -4,30 +4,18 @@ export const INITIAL_MOCK_ACCOUNTS: InstagramAccount[] = [
   {
     id: 'acc-1',
     user_id: 'user-demo-123',
-    instagram_business_account_id: '17841400000000001',
-    facebook_page_id: '10987654321',
-    access_token: 'EAAG...mock_long_lived_token_demo',
-    token_expires_at: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days left
-    instagram_username: 'fashion_boutique_br',
-    profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    instagram_business_account_id: '37370166699293226',
+    facebook_page_id: '1669236564150637',
+    access_token: 'IGAAXuKWxzyW1BZAGJPZAnB0OHpzLVNFTEhrNURMMDVxQ3hKbFFfd3dVa2VWYUpLUTZAsVkdZAWHRTajNndXBzZAjVua3U1VE9hRWhIM1Q4Y0E4WktJc3NyNjVpUlNlVGpQdEt5V3l1dktCS1VScThSMnJwWFEzWEdlOVQzUUNIZAi1IbwZDZD',
+    token_expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 dias
+    instagram_username: 'jrbrandt.webdesigner',
+    profile_pic_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     is_active: true,
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
-  {
-    id: 'acc-2',
-    user_id: 'user-demo-123',
-    instagram_business_account_id: '17841400000000002',
-    facebook_page_id: '10987654322',
-    access_token: 'EAAG...mock_long_lived_token_expiring',
-    token_expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days left
-    instagram_username: 'viajando_com_julia',
-    profile_pic_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-    is_active: true,
-    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date().toISOString(),
-  }
 ];
+
 
 export const INITIAL_MOCK_POSTS: Post[] = [
   {

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { mockStore } from '@/lib/supabase/mock-store';
+import { useState, useEffect } from 'react';
 import { InstagramAccount } from '@/lib/types/database';
 import { 
   Instagram, 
@@ -19,41 +18,59 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function AccountsPage() {
-  const [accounts, setAccounts] = useState<InstagramAccount[]>(mockStore.getAccounts());
+  const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectSuccessMsg, setConnectSuccessMsg] = useState<string | null>(null);
 
-  const fetchAccounts = () => {
-    setAccounts(mockStore.getAccounts());
+  const fetchAccounts = async () => {
+    try {
+      const res = await fetch('/api/accounts');
+      const data = await res.json();
+      setAccounts(data.accounts || []);
+    } catch (err) {
+      console.error('Erro ao carregar contas:', err);
+    }
   };
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
   const handleSimulateFacebookOAuth = () => {
     setIsConnecting(true);
     setConnectSuccessMsg(null);
 
     // Simulate Facebook OAuth redirection & token exchange
-    setTimeout(() => {
+    setTimeout(async () => {
       const newUsername = `marca_demo_${Math.floor(100 + Math.random() * 900)}`;
-      mockStore.addAccount({
-        instagram_username: newUsername,
-        instagram_business_account_id: `1784${Math.floor(10000000000 + Math.random() * 90000000000)}`,
-        facebook_page_id: `109${Math.floor(1000000000 + Math.random() * 9000000000)}`,
-        access_token: 'EAAG...mock_long_lived_user_and_page_token_60days',
-        token_expires_at: new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString(),
-        profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      await fetch('/api/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add',
+          instagram_username: newUsername,
+          instagram_business_account_id: `1784${Math.floor(10000000000 + Math.random() * 90000000000)}`,
+          facebook_page_id: `109${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+          access_token: 'EAAG...mock_long_lived_user_and_page_token_60days',
+          token_expires_at: new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString(),
+          profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        }),
       });
 
-      fetchAccounts();
+      await fetchAccounts();
       setIsConnecting(false);
       setConnectSuccessMsg(`Conta @${newUsername} vinculada com sucesso via Facebook Login!`);
-
       setTimeout(() => setConnectSuccessMsg(null), 4000);
     }, 1500);
   };
 
-  const handleDeleteAccount = (id: string, username: string) => {
+  const handleDeleteAccount = async (id: string, username: string) => {
     if (confirm(`Deseja desconectar a conta @${username}?`)) {
-      mockStore.deleteAccount(id);
+      await fetch('/api/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id }),
+      });
       fetchAccounts();
     }
   };

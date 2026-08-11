@@ -1,21 +1,31 @@
 'use client';
 
-import { useState } from 'react';
-import { mockStore } from '@/lib/supabase/mock-store';
+import { useState, useEffect } from 'react';
 import { Settings, Sparkles, Globe, Key, Save, CheckCircle2, Zap } from 'lucide-react';
 
 export default function SettingsPage() {
-  const profile = mockStore.getProfile();
-  const [timezone, setTimezone] = useState(profile.default_timezone);
-  const [aiTone, setAiTone] = useState(profile.ai_default_tone);
+  const [timezone, setTimezone] = useState('America/Sao_Paulo');
+  const [aiTone, setAiTone] = useState('Envolvente & Criativo');
   const [savedMsg, setSavedMsg] = useState(false);
 
-  const handleSave = () => {
-    mockStore.updateProfile({
-      default_timezone: timezone,
-      ai_default_tone: aiTone,
-    });
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(data => {
+        if (data.profile) {
+          setTimezone(data.profile.default_timezone || 'America/Sao_Paulo');
+          setAiTone(data.profile.ai_default_tone || 'Envolvente & Criativo');
+        }
+      })
+      .catch(console.error);
+  }, []);
 
+  const handleSave = async () => {
+    await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ default_timezone: timezone, ai_default_tone: aiTone }),
+    });
     setSavedMsg(true);
     setTimeout(() => setSavedMsg(false), 3000);
   };

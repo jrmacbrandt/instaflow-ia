@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockStore } from '@/lib/supabase/mock-store';
 import { Post, PostStatus } from '@/lib/types/database';
 import { PostCreatorModal } from '@/components/posts/post-creator-modal';
 import { 
@@ -31,31 +30,49 @@ export default function PostsPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isCreatorOpen, setIsCreatorOpen] = useState(false);
 
-  const fetchPosts = () => {
-    setPosts(mockStore.getPosts());
+  const fetchPosts = async () => {
+    try {
+      const res = await fetch('/api/posts');
+      const data = await res.json();
+      setPosts(data.posts || []);
+    } catch (err) {
+      console.error('Erro ao carregar posts:', err);
+    }
   };
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  const handleDuplicate = (id: string) => {
-    mockStore.duplicatePost(id);
+  const handleDuplicate = async (id: string) => {
+    await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'duplicate', id }),
+    });
     fetchPosts();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este post?')) {
-      mockStore.deletePost(id);
+      await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id }),
+      });
       fetchPosts();
     }
   };
 
   const handleRetryPublish = async (post: Post) => {
-    mockStore.savePost({
-      id: post.id,
-      status: 'scheduled',
-      scheduled_at: new Date().toISOString(),
+    await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: post.id,
+        status: 'scheduled',
+        scheduled_at: new Date().toISOString(),
+      }),
     });
     fetchPosts();
     await fetch('/api/cron/publish', { method: 'POST' });

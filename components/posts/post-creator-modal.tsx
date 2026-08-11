@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   X, 
   UploadCloud, 
@@ -19,7 +19,7 @@ import {
   Check
 } from 'lucide-react';
 import { mockStore } from '@/lib/supabase/mock-store';
-import { Post, PostMediaType } from '@/lib/types/database';
+import { Post, PostMediaType, InstagramAccount } from '@/lib/types/database';
 import { AiCaptionModal } from './ai-caption-modal';
 
 interface PostCreatorModalProps {
@@ -35,10 +35,23 @@ export function PostCreatorModal({
   onSuccess,
   initialPost,
 }: PostCreatorModalProps) {
-  const accounts = mockStore.getAccounts();
+  const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState(
-    initialPost?.instagram_account_id || accounts[0]?.id || ''
+    initialPost?.instagram_account_id || ''
   );
+
+  useEffect(() => {
+    fetch('/api/accounts')
+      .then(r => r.json())
+      .then(data => {
+        const list = data.accounts || [];
+        setAccounts(list);
+        if (!selectedAccountId && list.length > 0) {
+          setSelectedAccountId(initialPost?.instagram_account_id || list[0]?.id || '');
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const [mediaType, setMediaType] = useState<PostMediaType>(initialPost?.media_type || 'IMAGE');
   const [mediaUrls, setMediaUrls] = useState<string[]>(

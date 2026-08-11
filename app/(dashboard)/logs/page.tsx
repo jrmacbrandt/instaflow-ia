@@ -1,19 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import { mockStore } from '@/lib/supabase/mock-store';
+import { useState, useEffect } from 'react';
 import { PublicationLog } from '@/lib/types/database';
 import { FileText, CheckCircle2, AlertCircle, RefreshCw, Terminal, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function LogsPage() {
-  const [logs, setLogs] = useState<PublicationLog[]>(mockStore.getLogs());
+  const [logs, setLogs] = useState<PublicationLog[]>([]);
   const [selectedLog, setSelectedLog] = useState<PublicationLog | null>(null);
 
-  const fetchLogs = () => {
-    setLogs(mockStore.getLogs());
+  const fetchLogs = async () => {
+    try {
+      const res = await fetch('/api/logs');
+      const data = await res.json();
+      setLogs(data.logs || []);
+    } catch (err) {
+      console.error('Erro ao carregar logs:', err);
+    }
   };
+
+  useEffect(() => {
+    fetchLogs();
+  }, []);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-fade-in">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockStore } from '@/lib/supabase/mock-store';
 import { Post } from '@/lib/types/database';
 import { InteractiveCalendar } from '@/components/calendar/interactive-calendar';
 import { PostCreatorModal } from '@/components/posts/post-creator-modal';
@@ -27,11 +26,17 @@ export default function DashboardPage() {
   const [isCreatorOpen, setIsCreatorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchPosts = () => {
+  const fetchPosts = async () => {
     setIsLoading(true);
-    const data = mockStore.getPosts();
-    setPosts(data);
-    setIsLoading(false);
+    try {
+      const res = await fetch('/api/posts');
+      const data = await res.json();
+      setPosts(data.posts || []);
+    } catch (err) {
+      console.error('Erro ao carregar posts:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
