@@ -17,121 +17,9 @@ export const INITIAL_MOCK_ACCOUNTS: InstagramAccount[] = [
 ];
 
 
-export const INITIAL_MOCK_POSTS: Post[] = [
-  {
-    id: 'post-1',
-    user_id: 'user-demo-123',
-    instagram_account_id: 'acc-1',
-    caption: '✨ Nova coleção Primavera/Verão acabou de chegar no site! 🌸👗 Tecidos leves, estampas exclusivas e caimento perfeito. Qual o seu look favorito? Link na bio!\n\n#moda #estilo #primavera #outfit #lookdodia',
-    media_type: 'CAROUSEL',
-    media_urls: [
-      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&auto=format&fit=crop&q=80'
-    ],
-    scheduled_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // Today + 2h
-    status: 'scheduled',
-    ai_generated: true,
-    ai_prompt: 'Legenda para lançamento de coleção de moda feminina',
-    created_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'post-2',
-    user_id: 'user-demo-123',
-    instagram_account_id: 'acc-2',
-    caption: '🏝️ 5 Lugares imperdíveis em Fernando de Noronha! Guarde este post para sua próxima viagem. Qual dessas praias é a sua dos sonhos? 🌊☀️\n\n#viagem #noronhadossonhos #brasil #turismo',
-    media_type: 'IMAGE',
-    media_urls: [
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80'
-    ],
-    scheduled_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString(), // Yesterday
-    status: 'published',
-    instagram_post_id: '17988827361928371',
-    instagram_permalink: 'https://instagram.com/p/C_mock_post_noronha',
-    ai_generated: true,
-    created_at: new Date(Date.now() - 25 * 3600 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
-  },
-  {
-    id: 'post-3',
-    user_id: 'user-demo-123',
-    instagram_account_id: 'acc-1',
-    caption: '💡 3 Dicas infalíveis para combinar acessórios dourados com qualquer peça de roupa neutra. Salve pra não esquecer! ✨\n\n#dicasdemoda #acessorios #jewelry #moda',
-    media_type: 'IMAGE',
-    media_urls: [
-      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&auto=format&fit=crop&q=80'
-    ],
-    scheduled_at: new Date(Date.now() + 48 * 3600 * 1000).toISOString(), // Day after tomorrow
-    status: 'scheduled',
-    ai_generated: false,
-    created_at: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'post-4',
-    user_id: 'user-demo-123',
-    instagram_account_id: 'acc-2',
-    caption: 'Rascunho de post sobre as melhores malas de viagem para despachar.',
-    media_type: 'IMAGE',
-    media_urls: [
-      'https://images.unsplash.com/photo-1565026057447-b8899f2911a8?w=800&auto=format&fit=crop&q=80'
-    ],
-    scheduled_at: null,
-    status: 'draft',
-    ai_generated: false,
-    created_at: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'post-5',
-    user_id: 'user-demo-123',
-    instagram_account_id: 'acc-1',
-    caption: 'Bastidores do nosso novo ensaio fotográfico no estúdio! 📸✨',
-    media_type: 'VIDEO',
-    media_urls: [
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
-    ],
-    scheduled_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
-    status: 'failed',
-    failure_reason: 'Instagram API Error: Token de acesso expirado. Re-autenticação necessária (Code: 190).',
-    created_at: new Date(Date.now() - 10 * 3600 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
-  }
-];
+export const INITIAL_MOCK_POSTS: Post[] = [];
 
-export const INITIAL_MOCK_LOGS: PublicationLog[] = [
-  {
-    id: 'log-1',
-    post_id: 'post-2',
-    attempt: 1,
-    action: 'create_media_container',
-    request_payload: { image_url: 'https://images.unsplash.com/...', caption: '🏝️ 5 Lugares imperdíveis...' },
-    response_status: 200,
-    response_body: { id: '17988827361928371_container' },
-    created_at: new Date(Date.now() - 24 * 3600 * 1000 + 1000).toISOString(),
-  },
-  {
-    id: 'log-2',
-    post_id: 'post-2',
-    attempt: 1,
-    action: 'publish_media',
-    request_payload: { creation_id: '17988827361928371_container' },
-    response_status: 200,
-    response_body: { id: '17988827361928371', permalink: 'https://instagram.com/p/C_mock_post_noronha' },
-    created_at: new Date(Date.now() - 24 * 3600 * 1000 + 4000).toISOString(),
-  },
-  {
-    id: 'log-3',
-    post_id: 'post-5',
-    attempt: 1,
-    action: 'create_media_container',
-    request_payload: { video_url: 'https://commondatastorage...', media_type: 'REELS' },
-    response_status: 401,
-    response_body: { error: { message: 'Invalid OAuth access token', code: 190, fbtrace_id: 'AxY98110xM' } },
-    error_message: 'Token de acesso expirado. Re-autenticação necessária.',
-    created_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
-  }
-];
+export const INITIAL_MOCK_LOGS: PublicationLog[] = [];
 
 class MockStore {
   private posts: Post[] = [...INITIAL_MOCK_POSTS];
@@ -139,12 +27,12 @@ class MockStore {
   private logs: PublicationLog[] = [...INITIAL_MOCK_LOGS];
   private profile: Profile = {
     id: 'user-demo-123',
-    email: 'demostrator@instaflow.ai',
-    full_name: 'Ana Silva (Social Media)',
-    avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    email: 'jrbrandt@webdesigner.com',
+    full_name: 'José Roberto Machado Brandt',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     default_timezone: 'America/Sao_Paulo',
     ai_default_tone: 'Criativo & Descontraído',
-    created_at: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString(),
+    created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 

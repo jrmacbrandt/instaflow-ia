@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, CheckCircle2, AlertCircle, RefreshCw, Instagram, Bell, Globe } from 'lucide-react';
-import { mockStore } from '@/lib/supabase/mock-store';
+import { Profile, InstagramAccount } from '@/lib/types/database';
 
 interface HeaderProps {
   onRefreshNeeded?: () => void;
@@ -11,9 +11,25 @@ interface HeaderProps {
 export function Header({ onRefreshNeeded }: HeaderProps) {
   const [isRunningCron, setIsRunningCron] = useState(false);
   const [cronNotification, setCronNotification] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Partial<Profile>>({
+    full_name: 'José Roberto Machado Brandt',
+    default_timezone: 'America/Sao_Paulo',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+  });
+  const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
 
-  const profile = mockStore.getProfile();
-  const accounts = mockStore.getAccounts();
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(data => { if (data.profile) setProfile(data.profile); })
+      .catch(console.error);
+
+    fetch('/api/accounts')
+      .then(r => r.json())
+      .then(data => { if (data.accounts) setAccounts(data.accounts); })
+      .catch(console.error);
+  }, []);
+
   const activeAccount = accounts[0] || null;
 
   const triggerCronExecution = async () => {
