@@ -9,7 +9,7 @@ export const INITIAL_MOCK_ACCOUNTS: InstagramAccount[] = [
     access_token: 'IGAAXuKWxzyW1BZAGJPZAnB0OHpzLVNFTEhrNURMMDVxQ3hKbFFfd3dVa2VWYUpLUTZAsVkdZAWHRTajNndXBzZAjVua3U1VE9hRWhIM1Q4Y0E4WktJc3NyNjVpUlNlVGpQdEt5V3l1dktCS1VScThSMnJwWFEzWEdlOVQzUUNIZAi1IbwZDZD',
     token_expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 dias
     instagram_username: 'jrbrandt.webdesigner',
-    profile_pic_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    profile_pic_url: 'https://instagram.fstu2-1.fna.fbcdn.net/v/t51.82787-19/684896521_18101235280864641_2414854226926064674_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=107&ccb=7-5&_nc_sid=bf7eb4&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDU1LkMzIn0%3D&_nc_ohc=0_ivaoHkHzEQ7kNvwGrl8ns&_nc_oc=AdoK9JNChA6ic0BeNvpEnrE10j_O1f6ilytAWSpz5dAdHAI_H3FQxBVroa6SPACoUdjE7loSHNC-4RI4ISmXNJkt&_nc_zt=24&_nc_ht=instagram.fstu2-1.fna&edm=AP4hL3IEAAAA&_nc_gid=rv1CdPQpV-6OI237OkZWrg&_nc_tpa=Q5bMBQJVWvR8gLvOlzeQ5_2BJcBNwZ6O-zMUnYhERE6XFs2czVJgf0LLzhBGVoezfYdkKWe48nbWKoJ3pA&oh=00_AQGf6OZfTSmvOA_HJr3agz6FRb5-qlNOUW_vTJOMEia7TQ&oe=6A805497',
     is_active: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -29,7 +29,7 @@ class MockStore {
     id: 'user-demo-123',
     email: 'jrbrandt@webdesigner.com',
     full_name: 'José Roberto Machado Brandt',
-    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    avatar_url: 'https://instagram.fstu2-1.fna.fbcdn.net/v/t51.82787-19/684896521_18101235280864641_2414854226926064674_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=107&ccb=7-5&_nc_sid=bf7eb4&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDU1LkMzIn0%3D&_nc_ohc=0_ivaoHkHzEQ7kNvwGrl8ns&_nc_oc=AdoK9JNChA6ic0BeNvpEnrE10j_O1f6ilytAWSpz5dAdHAI_H3FQxBVroa6SPACoUdjE7loSHNC-4RI4ISmXNJkt&_nc_zt=24&_nc_ht=instagram.fstu2-1.fna&edm=AP4hL3IEAAAA&_nc_gid=rv1CdPQpV-6OI237OkZWrg&_nc_tpa=Q5bMBQJVWvR8gLvOlzeQ5_2BJcBNwZ6O-zMUnYhERE6XFs2czVJgf0LLzhBGVoezfYdkKWe48nbWKoJ3pA&oh=00_AQGf6OZfTSmvOA_HJr3agz6FRb5-qlNOUW_vTJOMEia7TQ&oe=6A805497',
     default_timezone: 'America/Sao_Paulo',
     ai_default_tone: 'Criativo & Descontraído',
     created_at: new Date().toISOString(),

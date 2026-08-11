@@ -36,32 +36,15 @@ export default function AccountsPage() {
     fetchAccounts();
   }, []);
 
-  const handleSimulateFacebookOAuth = () => {
+  const handleRealFacebookOAuth = () => {
     setIsConnecting(true);
-    setConnectSuccessMsg(null);
-
-    // Simulate Facebook OAuth redirection & token exchange
-    setTimeout(async () => {
-      const newUsername = `marca_demo_${Math.floor(100 + Math.random() * 900)}`;
-      await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'add',
-          instagram_username: newUsername,
-          instagram_business_account_id: `1784${Math.floor(10000000000 + Math.random() * 90000000000)}`,
-          facebook_page_id: `109${Math.floor(1000000000 + Math.random() * 9000000000)}`,
-          access_token: 'EAAG...mock_long_lived_user_and_page_token_60days',
-          token_expires_at: new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString(),
-          profile_pic_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        }),
-      });
-
-      await fetchAccounts();
-      setIsConnecting(false);
-      setConnectSuccessMsg(`Conta @${newUsername} vinculada com sucesso via Facebook Login!`);
-      setTimeout(() => setConnectSuccessMsg(null), 4000);
-    }, 1500);
+    const appId = '1669236564150637';
+    const redirectUri = typeof window !== 'undefined' ? `${window.location.origin}/accounts` : 'https://instaflow-ia.vercel.app/accounts';
+    const scope = 'instagram_basic,instagram_content_publish,pages_read_engagement';
+    
+    // Redirect directly to official Meta Instagram Login OAuth
+    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
+    window.location.href = authUrl;
   };
 
   const handleDeleteAccount = async (id: string, username: string) => {
@@ -89,7 +72,7 @@ export default function AccountsPage() {
         </div>
 
         <button
-          onClick={handleSimulateFacebookOAuth}
+          onClick={handleRealFacebookOAuth}
           disabled={isConnecting}
           className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
         >
