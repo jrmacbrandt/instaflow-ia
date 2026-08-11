@@ -123,19 +123,19 @@ export function InteractiveCalendar({ posts, onSelectPost, onCreateNewPost }: In
           return (
             <div
               key={idx}
-              className={`min-h-[110px] p-2 rounded-xl border flex flex-col justify-between transition-all group ${
+              className={`min-h-[110px] p-2.5 rounded-xl border flex flex-col justify-between transition-all group ${
                 isCurrentMonthDay
                   ? isToday
-                    ? 'bg-purple-950/20 border-purple-500/50'
+                    ? 'bg-gradient-to-b from-purple-950/60 to-slate-950 border-purple-500 ring-2 ring-purple-500/40 shadow-lg shadow-purple-500/20'
                     : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
-                  : 'bg-slate-950/20 border-slate-900 opacity-40'
+                  : 'bg-slate-950/20 border-slate-900 opacity-30'
               }`}
             >
               {/* Date Header */}
               <div className="flex items-center justify-between">
                 <span
-                  className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
-                    isToday ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400'
+                  className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center transition-transform ${
+                    isToday ? 'instagram-gradient-bg text-white font-black shadow-md shadow-pink-500/40 scale-110' : 'text-slate-400'
                   }`}
                 >
                   {format(dateDay, 'd')}
