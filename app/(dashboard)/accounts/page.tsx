@@ -38,7 +38,7 @@ export default function AccountsPage() {
 
   const handleRealFacebookOAuth = () => {
     setIsConnecting(true);
-    const appId = '1669236564150637';
+    const appId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '116302999936541';
     const redirectUri = typeof window !== 'undefined' ? `${window.location.origin}/api/instagram/callback` : 'https://instaflow-ia.vercel.app/api/instagram/callback';
     const scope = 'instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list';
     
