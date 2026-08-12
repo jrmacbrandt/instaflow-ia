@@ -77,7 +77,7 @@ export async function publishPostToInstagram(post: Post): Promise<InstagramPubli
 
       for (let i = 0; i < post.media_urls.length; i++) {
         const url = post.media_urls[i];
-        const isVideo = url.endsWith('.mp4') || url.endsWith('.mov');
+        const isVideo = url.endsWith('.mp4') || url.endsWith('.mov') || url.includes('.mp4?') || url.includes('.mov?');
 
         const itemRes = await fetch(`${graphBaseUrl}/${igUserId}/media`, {
           method: 'POST',
@@ -103,6 +103,11 @@ export async function publishPostToInstagram(post: Post): Promise<InstagramPubli
 
         if (!itemRes.ok || !itemData.id) {
           throw new Error(`Falha ao criar item de carrossel ${i + 1}: ${itemData.error?.message || 'Erro desconhecido'}`);
+        }
+
+        // Wait for video container to be ready before moving forward
+        if (isVideo) {
+          await waitForContainerReady(graphBaseUrl, itemData.id, accessToken, post.id, logs);
         }
 
         childrenIds.push(itemData.id);
@@ -140,7 +145,7 @@ export async function publishPostToInstagram(post: Post): Promise<InstagramPubli
     } else {
       // Single Image or Single Video Execution
       const url = post.media_urls[0] || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e';
-      const isVideo = post.media_type === 'VIDEO' || url.endsWith('.mp4');
+      const isVideo = post.media_type === 'VIDEO' || url.endsWith('.mp4') || url.endsWith('.mov') || url.includes('.mp4?') || url.includes('.mov?');
 
       const containerRes = await fetch(`${graphBaseUrl}/${igUserId}/media`, {
         method: 'POST',
@@ -168,6 +173,11 @@ export async function publishPostToInstagram(post: Post): Promise<InstagramPubli
         throw new Error(`Falha no container da mídia: ${containerData.error?.message || 'Media creation failed'}`);
       }
 
+      // Wait for single video container to be ready
+      if (isVideo) {
+        await waitForContainerReady(graphBaseUrl, containerData.id, accessToken, post.id, logs);
+      }
+
       return await executeMediaPublish(graphBaseUrl, igUserId, containerData.id, accessToken, post.id, logs);
     }
   } catch (err: any) {
@@ -188,6 +198,50 @@ export async function publishPostToInstagram(post: Post): Promise<InstagramPubli
       logs,
     };
   }
+}
+
+async function waitForContainerReady(
+  baseUrl: string,
+  containerId: string,
+  accessToken: string,
+  postId: string,
+  logs: Omit<PublicationLog, 'id' | 'created_at'>[]
+): Promise<boolean> {
+  const maxAttempts = 15;
+  const delayMs = 5000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch(`${baseUrl}/${containerId}?fields=status_code,status,error_message&access_token=${accessToken}`);
+      const data = await res.json();
+
+      logs.push({
+        post_id: postId,
+        attempt,
+        action: `check_container_status_attempt_${attempt}`,
+        request_payload: { container_id: containerId },
+        response_status: res.status,
+        response_body: data,
+      });
+
+      if (res.ok) {
+        const statusCode = data.status_code;
+        if (statusCode === 'FINISHED') {
+          return true;
+        }
+        if (statusCode === 'ERROR') {
+          throw new Error(`Erro no processamento do vídeo no Instagram: ${data.error_message || 'Erro desconhecido'}`);
+        }
+        if (statusCode === 'EXPIRED') {
+          throw new Error('O container do vídeo expirou no Instagram.');
+        }
+      }
+    } catch (err: any) {
+      if (attempt === maxAttempts) throw err;
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+  throw new Error('Tempo limite excedido aguardando o processamento do vídeo no Instagram.');
 }
 
 async function executeMediaPublish(
