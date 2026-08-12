@@ -18,8 +18,8 @@ import {
   Smile,
   Check
 } from 'lucide-react';
-import { mockStore } from '@/lib/supabase/mock-store';
 import { Post, PostMediaType, InstagramAccount } from '@/lib/types/database';
+
 import { AiCaptionModal } from './ai-caption-modal';
 
 interface PostCreatorModalProps {
@@ -135,27 +135,43 @@ export function PostCreatorModal({
 
       if (targetStatus === 'scheduled') {
         finalStatus = 'scheduled';
+        // Build date in local time (America/Sao_Paulo) by using the date/time string directly.
+        // The server will store as ISO; the cron compares via .lte() on UTC—this is consistent.
         const combinedDate = new Date(`${scheduleDate}T${scheduleTime}:00`);
+        if (isNaN(combinedDate.getTime())) throw new Error('Data ou hora inválida. Verifique os campos de agendamento.');
         scheduledAtIso = combinedDate.toISOString();
       } else if (targetStatus === 'publish_now') {
         finalStatus = 'scheduled';
-        scheduledAtIso = new Date().toISOString(); // Immediate schedule
+        scheduledAtIso = new Date().toISOString(); // Publicação imediata
       }
 
       const postData: Partial<Post> = {
         id: initialPost?.id,
-        instagram_account_id: selectedAccountId,
+        instagram_account_id: selectedAccountId || null,
         caption,
         media_type: mediaType,
         media_urls: mediaUrls,
         scheduled_at: scheduledAtIso,
         status: finalStatus,
+        ai_generated: initialPost?.ai_generated || false,
+        ai_prompt: initialPost?.ai_prompt || null,
       };
 
-      const savedPost = mockStore.savePost(postData);
+      // CORREÇÃO CRÍTICA: Salvar via API REST (não direto no mockStore)
+      // Isso garante que o post chegue ao Supabase e seja encontrado pelo cron job
+      const saveRes = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData),
+      });
+
+      if (!saveRes.ok) {
+        const errData = await saveRes.json();
+        throw new Error(errData.error || 'Erro ao salvar o post no servidor.');
+      }
 
       if (targetStatus === 'publish_now') {
-        // Trigger immediate cron publishing call
+        // Disparar publicação imediata via cron endpoint
         await fetch('/api/cron/publish', { method: 'POST' });
       }
 
@@ -426,9 +442,13 @@ export function PostCreatorModal({
                   type="button"
                   onClick={() => handleSubmit('draft')}
                   disabled={isSubmitting}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4 text-slate-400" />
+                  {isSubmitting ? (
+                    <span className="w-4 h-4 border-2 border-slate-500 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 text-slate-400" />
+                  )}
                   <span>Salvar Rascunho</span>
                 </button>
 
@@ -437,20 +457,28 @@ export function PostCreatorModal({
                     type="button"
                     onClick={() => handleSubmit('publish_now')}
                     disabled={isSubmitting}
-                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Publicar Agora</span>
+                    {isSubmitting ? (
+                      <span className="w-4 h-4 border-2 border-indigo-300 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    <span>{isSubmitting ? 'Publicando...' : 'Publicar Agora'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleSubmit('scheduled')}
                     disabled={isSubmitting}
-                    className="px-5 py-2.5 instagram-gradient-bg hover:opacity-95 text-white rounded-xl text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="px-5 py-2.5 instagram-gradient-bg hover:opacity-95 text-white rounded-xl text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <Check className="w-4 h-4" />
-                    <span>Confirmar Agendamento</span>
+                    {isSubmitting ? (
+                      <span className="w-4 h-4 border-2 border-pink-300 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4" />
+                    )}
+                    <span>{isSubmitting ? 'Agendando...' : 'Confirmar Agendamento'}</span>
                   </button>
                 </div>
               </div>
