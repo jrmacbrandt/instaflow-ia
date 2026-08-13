@@ -15,8 +15,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const appId = process.env.FACEBOOK_APP_ID || '1669236564150637';
-    const appSecret = process.env.FACEBOOK_APP_SECRET || 'd0e59101f28710b8fef7895d24b4ee5e';
+    const appId = process.env.FACEBOOK_APP_ID;
+    const appSecret = process.env.FACEBOOK_APP_SECRET;
+
+    if (!appId || !appSecret) {
+      throw new Error('FACEBOOK_APP_ID ou FACEBOOK_APP_SECRET não configurados no ambiente.');
+    }
+
     const redirectUri = `${appUrl}/api/instagram/callback`;
 
     // Step 1: Exchange code for short-lived access token

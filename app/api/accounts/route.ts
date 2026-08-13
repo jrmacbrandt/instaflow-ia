@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient, OWNER_USER_ID } from '@/lib/supabase/server';
 import { mockStore } from '@/lib/supabase/mock-store';
+import { autoSeedAccountsIfEmpty } from '@/lib/supabase/auto-seed';
 
 // GET /api/accounts
 export async function GET() {
   const supabase = createServiceClient();
 
   if (supabase) {
+    // Auto-sincroniza contas do mock-store se o Supabase estiver vazio
+    await autoSeedAccountsIfEmpty(supabase, OWNER_USER_ID);
+
     const { data, error } = await supabase
       .from('instagram_accounts')
       .select('*')
@@ -22,6 +26,7 @@ export async function GET() {
   // Fallback: mock store
   return NextResponse.json({ accounts: mockStore.getAccounts() });
 }
+
 
 // POST /api/accounts
 export async function POST(req: NextRequest) {
