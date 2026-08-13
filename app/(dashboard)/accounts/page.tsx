@@ -43,7 +43,7 @@ export default function AccountsPage() {
     const scope = 'instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list';
     
     // Facebook Login Dialog for Instagram Business Graph API
-    const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code`;
+    const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code&auth_type=reauthenticate`;
     window.location.href = authUrl;
   };
 
